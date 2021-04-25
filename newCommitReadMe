@@ -1,0 +1,6 @@
+Hey Y'all, Matt here! In this commit I finished the commit fucntion and fixed the add fucntion so now it doesn't add to the minigit directory.
+Now the commit fucntion does that. Also, FYI, the most currect commit is the head of the DLL node and the previous version is linked to head->next. 
+
+Something like: Head-->prev commit--> prev commit to new head(curr) --> head (old head) --> prev commit --> commit.
+
+If you have any question tag me in discord!
