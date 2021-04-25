@@ -41,8 +41,8 @@ void minGit::newRepository(){
     auto path = fs::current_path();
 
     fs::create_directory(".minigit");
-
-    fs::current_path(".minigit");
+    fs::create_directory("staging_area");
+    fs::current_path("staging_area");
 
 }
 
@@ -205,6 +205,37 @@ while(curr != NULL)
 }
 
 void minGit::checkout(int fileNumber){
+    doublyNode* curr = head;
+    cout << "WARNING! Entering a valid commit number will overwrite your local changes." << endl;
+    singlyNode* node = head->head;
+    singlyNode* temp = NULL;
+    while(node != NULL)
+    {
+        temp = node->next;
+        const char * removeName = (node->fileName).c_str();
+        remove(removeName);
+        free(node);
+        node = temp;
+    }
+    while(curr != NULL)
+    {
+        if(curr->commitNumber == fileNumber)
+        {
+            singlyNode* latest = curr->head;
+            {
+                while(latest != NULL)
+                {
+                    ofstream fileOverwrite;
+                    fileOverwrite.open(latest->fileName);
+                    latest = latest->next;
+                }
+            }
+        }
+        else
+        {
+            curr = curr->next;
+        }
+    }
 
 ///If the user chooses to checkout a version, they should be prompted to enter a commit number.
 //For a valid commit number, the files in the current directory should be overwritten by the
