@@ -257,14 +257,14 @@ bool _fileChange(string filename, string minigitname){ // returns True if there 
 
     if(readFile.is_open() && readMini.is_open())
     {
-
+        cout << "debug" << endl; 
         while( 1 ) // getline(readMini,miniLine) ||
         {   
             f = readFile.get();
             m = readMini.get();
-            
+            cout << f << m << endl; 
             if (f != m){
-                
+                cout << "Debug" << endl; 
                 change = true; 
                 break; 
             }  
@@ -329,7 +329,7 @@ void minGit::commit(){
             copyFile->fileName = oldCommit->fileName;
 
             
-           if( _fileChange( oldCommit->fileName , oldCommit->fileVersion) )
+           if( _fileChange( oldCommit->fileName , Mini + oldCommit->fileVersion) ) //ERROR was HERE
            {
                cout << oldCommit->fileName << "'s new version has been saved. " << endl;
                copyFile->fileVersion = corrFile(oldCommit->fileName, _nextVersion(oldCommit->fileVersion));
@@ -355,7 +355,7 @@ void minGit::commit(){
 //----------------------------------------------------
 
 //---------------------------------------------------- copying the files in the working directory to the .minigit
-    tempS = head->head; 
+    tempS = temp->head; 
     while (tempS!=NULL)
     {   //cout << "tempS does NOT = null" << endl; 
         fileVName = tempS->fileVersion;
@@ -373,10 +373,10 @@ void minGit::commit(){
             {
                 //SET A BOOL LOOP TO SEE IF THERE HAS BEEN A CHANGE OR NOT OF THE FILE
 
-                if ( _fileChange( tempS->fileName , fileVName ))
+                if ( _fileChange( tempS->fileName , fileNameMini)) ///// ERROR WAS HERE
                 {
                     
-                    cout << "CHANGE DETECTED" << endl; 
+                    cout << "CHANGE DETECTED" << fileVName << endl; 
                     ofstream writeMe (Mini + corrFile(tempS->fileName, _nextVersion(fileVName)));
                     while(getline(readMe2,line)){
                              
