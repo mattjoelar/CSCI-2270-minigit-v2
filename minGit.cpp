@@ -128,6 +128,7 @@ void minGit::insert(){
     //named help00.txt, where 00 is the version number. (The initial file version should
     //be 00.)
 
+
     string userInp;
     ifstream file; //Needed to be ofstream to create new files.  //Changed to ifstream I dont think we create files in this step, only adding them to the SLL if they are in the directory
     system("cd .."); 
@@ -249,27 +250,30 @@ int _nextVersion (string fileVersion){ // returns the next version of the file, 
 bool _fileChange(string filename, string minigitname){ // returns True if there is a change
     ifstream readFile;
     ifstream readMini; 
+    string file;
+    string mini; 
     bool change = false; 
     char line[50], f, m; 
      
     readFile.open(filename);
-    readMini.open(minigitname); 
+    readMini.open(".minigit/" + minigitname); 
 
     if(readFile.is_open() && readMini.is_open())
     {
         
-        while( 1 ) // getline(readMini,miniLine) ||
+        while( readMini.get() && readFile.get() ) // getline(readMini,miniLine) ||
         {   
+
             f = readFile.get();
             m = readMini.get();
-            //cout << f << m << endl; 
+            
             if (f != m){
                 //cout << "Debug" << endl; 
                 change = true; 
                 break; 
             }  
             if((f==EOF)|| (m==EOF)){
-               
+                
                 break;
             }
         }  
@@ -329,7 +333,7 @@ void minGit::commit(){
             copyFile->fileName = oldCommit->fileName;
 
             
-           if( _fileChange( oldCommit->fileName , Mini + oldCommit->fileVersion) ) //ERROR was HERE
+           if( _fileChange( oldCommit->fileName ,  oldCommit->fileVersion) ) //ERROR was HERE
            {
                cout << oldCommit->fileName << "'s new version has been saved. " << endl;
                copyFile->fileVersion = corrFile(oldCommit->fileName, _nextVersion(oldCommit->fileVersion));
@@ -373,10 +377,10 @@ void minGit::commit(){
             {
                 //SET A BOOL LOOP TO SEE IF THERE HAS BEEN A CHANGE OR NOT OF THE FILE
 
-                if ( _fileChange( tempS->fileName , fileNameMini)) ///// ERROR WAS HERE
+                if ( _fileChange( tempS->fileName , fileVName)) ///// ERROR WAS HERE
                 {
                     
-                    cout << "CHANGE DETECTED" << fileVName << endl; 
+                    cout << "CHANGE DETECTED IN: " << fileVName << endl; 
                     ofstream writeMe (Mini + corrFile(tempS->fileName, _nextVersion(fileVName)));
                     while(getline(readMe2,line)){
                              
@@ -412,12 +416,12 @@ void minGit::commit(){
             // string newFileName = Mini + fileName + "001"; 
 
                 //system(001); // place horder for the correct version number of the file
-
+                char n; 
                 while(getline(readMe2,line))
                 {   
                     if(newWriteMe.is_open())
                     {
-                        newWriteMe << line;
+                        newWriteMe << line << endl; ;
                     }
                     
                 }
@@ -430,16 +434,47 @@ void minGit::commit(){
 }
 
 void minGit::checkout(int fileNumber){
-    return; 
 
-///If the user chooses to checkout a version, they should be prompted to enter a commit number.
-//For a valid commit number, the files in the current directory should be overwritten by the
-//the corresponding files from the .minigit directory. (It is a good idea to issue a warning to
-//the user that they will loose their local changes if they checkout a different version before
-//making a commit with their current local changes.) <-- Must issue Warning!!!
-
-//This step will require a search through the DLL for a node with matching commit number2
-//. Also note that you must disallow add, remove, and commit operations when the current
-//version is different from the most recent commit (the last DLL node)
+    doublyNode* curr = head;
+    singlyNode* node = head->head;
+    singlyNode* temp = NULL;
+    /*while(node != NULL)
+    {
+        temp = node->next;
+        const char * removeName = (node->fileName).c_str();
+        remove(removeName);
+        cout << node->fileName << endl;
+        delete node;
+        node = temp;
+        cout << node->fileName << endl;
+    }*/
+    while(curr != NULL)
+    {
+        if(curr->commitNumber == fileNumber)
+        {
+            singlyNode* latest = curr->head;
+                while(latest != NULL)
+                {
+                    ofstream fileOverwrite;
+                    fileOverwrite.open(latest->fileName);
+                    ifstream file1;
+                    file1.open(latest->fileName);
+                    string line;
+                    while(getline(file1, line))
+                    {
+                        fileOverwrite << line;
+                    }
+                    file1.close();
+                    fileOverwrite.close();
+                    latest = latest->next;
+                }
+            break;
+        }
+        else
+        {
+            curr = curr->next;
+        }
+    }
+    return;
 
 }
