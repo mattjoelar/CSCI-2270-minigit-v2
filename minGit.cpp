@@ -1,4 +1,4 @@
-#include "minGit.hpp"
+#include "minGit.hpp" 
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -257,14 +257,14 @@ bool _fileChange(string filename, string minigitname){ // returns True if there 
 
     if(readFile.is_open() && readMini.is_open())
     {
-        cout << "debug" << endl; 
+        
         while( 1 ) // getline(readMini,miniLine) ||
         {   
             f = readFile.get();
             m = readMini.get();
-            cout << f << m << endl; 
+            //cout << f << m << endl; 
             if (f != m){
-                cout << "Debug" << endl; 
+                //cout << "Debug" << endl; 
                 change = true; 
                 break; 
             }  
