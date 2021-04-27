@@ -433,7 +433,29 @@ void minGit::commit(){
     }
 }
 
+bool _commitCheck (int fileNumber, doublyNode* head)
+{
+    doublyNode* temp = head; 
+    bool found = false; 
+    while(temp!=NULL)
+    {
+        if(temp->commitNumber == fileNumber)
+        {
+            found = true; 
+        }
+        temp = temp->next;
+    }
+   
+   return found; 
+}
+
 void minGit::checkout(int fileNumber){
+
+   if (! _commitCheck(fileNumber, head))
+   {
+       cout << "Commit Not Found. Please enter a vaild commit number. Taking you back to Menu." << endl;
+       return; 
+   } 
 
     doublyNode* curr = head;
     singlyNode* node = head->head;
