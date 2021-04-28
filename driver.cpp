@@ -1,8 +1,9 @@
-#include "minGit.hpp"
+#include "minGit.hpp"//// ung
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 
 using namespace std;
 
@@ -86,16 +87,33 @@ void handleUserInput(minGit& miniGit){
                 break;
             }
             case 4: {
-                
-            //    miniGit.checkout(int fileNumber);
 
-                break;
+
+                
+                string userInp;
+                cout << "WARNING! Entering a valid commit number will overwrite your local changes." << endl;
+                cout << "Enter commit number if you wish to proceed, otherwise enter 'Stop'." << endl;
+                getline(cin, userInp);
+
+
+                if(userInp == "Stop" || userInp == "stop")
+                {
+                    break;
+                }
+            else
+                {
+                    
+                    miniGit.checkout(stoi(userInp));
+                    break; 
+                }
+
             }
             // I think there should also be a print repo option here as well?
             case 5: {
                 
                 quit = true; 
                 cout << "Quitting" << endl;
+
 
                 break;
             }
@@ -116,7 +134,7 @@ void displayMenu()
     cout << " 2. Remove a file " << endl;
     cout << " 3. Commit changes " << endl;
     cout << " 4. Checkout " << endl;
-    cout << " 5. Quit" << endl;
+    cout << " 5. Quit [DElETES ALL SAVES]" << endl;
     cout << "+-----------------------+" << endl;
     cout << "#> ";
 }

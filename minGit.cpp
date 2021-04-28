@@ -25,7 +25,7 @@ minGit::minGit(){
    head = new doublyNode;
    head->next = NULL;
    head->prev = NULL;
-   head->commitNumber = 1;
+   head->commitNumber = 0;
 };
 
 minGit::~minGit(){
@@ -156,7 +156,7 @@ void minGit::insert(){
             cout << "Your file has been added. Choose the COMMIT(3) option to save." << endl; 
             singlyNode* insert = new singlyNode();
             insert->fileName = userInp;
-            insert->fileVersion = corrFile(userInp,0);
+            insert->fileVersion = corrFile(userInp,1);
             insert->next = NULL;
 
             if(head->head != NULL){
@@ -335,8 +335,10 @@ void minGit::commit(){
             
            if( _fileChange( oldCommit->fileName ,  oldCommit->fileVersion) ) //ERROR was HERE
            {
-               cout << oldCommit->fileName << "'s new version has been saved. " << endl;
-               copyFile->fileVersion = corrFile(oldCommit->fileName, _nextVersion(oldCommit->fileVersion));
+            cout << oldCommit->fileName << "'s new version has been saved. " << endl;
+            
+            copyFile->fileVersion = corrFile(oldCommit->fileName, _nextVersion(oldCommit->fileVersion));
+               
            }
            else
            {
@@ -359,6 +361,7 @@ void minGit::commit(){
 //----------------------------------------------------
 
 //---------------------------------------------------- copying the files in the working directory to the .minigit
+
     tempS = temp->head; 
     while (tempS!=NULL)
     {   //cout << "tempS does NOT = null" << endl; 
@@ -380,8 +383,8 @@ void minGit::commit(){
                 if ( _fileChange( tempS->fileName , fileVName)) ///// ERROR WAS HERE
                 {
                     
-                    cout << "CHANGE DETECTED IN: " << fileVName << endl; 
-                    ofstream writeMe (Mini + corrFile(tempS->fileName, _nextVersion(fileVName)));
+                    
+                    ofstream writeMe (Mini + corrFile(tempS->fileName, _nextVersion(fileVName))); // MINUS ONE SO FILE NUMBER MATCHES COMMIT NUMBER
                     while(getline(readMe2,line)){
                              
                         writeMe << line << endl;
@@ -389,6 +392,7 @@ void minGit::commit(){
                     }
                     writeMe.close(); 
                     readMe2.close();
+                   
                 }
                 else
                 {
@@ -459,44 +463,106 @@ void minGit::checkout(int fileNumber){
 
     doublyNode* curr = head;
     singlyNode* node = head->head;
-    singlyNode* temp = NULL;
-    /*while(node != NULL)
+    bool commitFound = false; 
+    while(curr != NULL && commitFound != true )
     {
-        temp = node->next;
-        const char * removeName = (node->fileName).c_str();
-        remove(removeName);
-        cout << node->fileName << endl;
-        delete node;
-        node = temp;
-        cout << node->fileName << endl;
-    }*/
-    while(curr != NULL)
-    {
+         
         if(curr->commitNumber == fileNumber)
-        {
+        {     
             singlyNode* latest = curr->head;
-                while(latest != NULL)
+             
+            while(latest != NULL)
+            {    
+                ofstream fileOverwrite;
+                ifstream file1;
+                fileOverwrite.open(node->fileName);
+                
+                if(fileOverwrite.is_open())
                 {
-                    ofstream fileOverwrite;
-                    fileOverwrite.open(latest->fileName);
-                    ifstream file1;
-                    file1.open(latest->fileName);
-                    string line;
-                    while(getline(file1, line))
-                    {
-                        fileOverwrite << line;
-                    }
-                    file1.close();
-                    fileOverwrite.close();
-                    latest = latest->next;
+                    //cout << "FILE  FOUND" << endl; 
                 }
-            break;
+                file1.open(".minigit/" + latest->fileVersion);
+                if(!file1.is_open()) // If file in ./minigit is not found. 
+                {
+                    cout << latest->fileVersion << " has been deleted manually. Aborting and returning to Menu." << endl; 
+                    commitFound = true; 
+                    break; 
+
+                }
+                string line;
+                while(getline(file1, line))
+                {   
+                    fileOverwrite << line << endl;
+                }
+
+                fileOverwrite.close();
+                file1.close();
+                
+                latest = latest->next;
+                node = node->next;
+                
+                commitFound = true; 
+            }
+            
         }
         else
         {
             curr = curr->next;
         }
     }
-    return;
+    
+    cout << " -------!!! WARNING !!!-------" << endl << "In the previous version in the repository.Cannot add, commit or delete." << endl;
+    cout << "Please type y to return. "<< endl;
+    bool menCh = false;
+    string choice;
+    while(!menCh){
+    getline(cin,choice);
+    if(choice == "y"){
+        doublyNode* recent = head; 
+        singlyNode* file = recent->head; 
+        ifstream readMe; 
+        ofstream writeMe; 
+
+        while(file!=NULL)
+        {   string fileName = file->fileName; 
+            string currentFile = file->fileVersion;
+            string miniFindName = ".minigit/" + currentFile;
+            string line; 
+
+            readMe.open(miniFindName);
+
+            if(readMe.is_open()) // sees if there is a file in the minigit
+            {   writeMe.open(fileName);
+                if(writeMe.is_open())
+                {
+                    while(getline(readMe,line)){
+                             
+                        writeMe << line << endl;
+                        
+                    }
+                    writeMe.close(); 
+                    readMe.close();
+                } 
+            }
+            file = file->next; 
+        }
+        menCh = true; 
+    }
+    else
+    {
+        cout << "Sorry, please try again." << endl;
+    }
+}
+return;
+    ///If the user chooses to checkout a version, they should be prompted to enter a commit number.
+    //For a valid commit number, the files in the current directory should be overwritten by the
+    //the corresponding files from the .minigit directory. (It is a good idea to issue a warning to
+    //the user that they will loose their local changes if they checkout a different version before
+    //making a commit with their current local changes.) <-- Must issue Warning!!!
+
+    //This step will require a search through the DLL for a node with matching commit number2
+    //. Also note that you must disallow add, remove, and commit operations when the current
+    //version is different from the most recent commit (the last DLL node)
+
 
 }
