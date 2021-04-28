@@ -134,7 +134,7 @@ void displayMenu()
     cout << " 2. Remove a file " << endl;
     cout << " 3. Commit changes " << endl;
     cout << " 4. Checkout " << endl;
-    cout << " 5. Quit [DElETES ALL SAVES]" << endl;
+    cout << " 5. Quit " << endl;
     cout << "+-----------------------+" << endl;
     cout << "#> ";
 }
